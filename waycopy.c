@@ -48,6 +48,7 @@ data_source_send(void *data, struct zwlr_data_control_source_v1 *source, const c
 	FILE *out = fdopen(fd, "w");
 	if (out == NULL) {
 		warn("failed to open fd as FILE");
+		return;
 	}
 
 	copyfile(out, temp);
