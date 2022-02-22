@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <fcntl.h>
 #include <limits.h>
 #include <string.h>
 #include <stdbool.h>
@@ -17,7 +18,7 @@ char mimetype[MIMETYPE_MAX_SIZE];
 
 struct zwlr_data_control_manager_v1 *data_control_manager;
 struct wl_seat *seat;
-FILE *temp;
+int temp;
 
 bool running = 1;
 
@@ -44,15 +45,10 @@ static const struct wl_registry_listener registry_listener = {
 void
 data_source_send(void *data, struct zwlr_data_control_source_v1 *source, const char *mime_type, int32_t fd)
 {
-	fseek(temp, SEEK_SET, 0);
-	FILE *out = fdopen(fd, "w");
-	if (out == NULL) {
-		warn("failed to open fd as FILE");
-		return;
-	}
+	lseek(temp, SEEK_SET, 0);
 
-	copyfile(out, temp);
-	fclose(out);
+	copyfd(fd, temp);
+	close(fd);
 }
 
 void
@@ -85,17 +81,12 @@ main(int argc, const char *argv[])
 	}
 
 	strncat(path, tempname, PATH_MAX - 1);
-	int tempfd = mkstemp(path);
-	if (tempfd == -1)
+	temp = mkstemp(path);
+	if (temp == -1)
 		die("failed to create temporary file for copy buffer");
 
-	temp = fdopen(tempfd, "r+");
-	if (temp == NULL) {
-		die("failed to open temporary file as FILE");
-	}
-
-	copyfile(temp, stdin);
-	fclose(stdin);
+	copyfd(temp, STDIN_FILENO);
+	close(STDIN_FILENO);
 
 	struct wl_display *const display = wl_display_connect(NULL);
 	if (display == NULL)
