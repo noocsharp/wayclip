@@ -1,3 +1,4 @@
 *.o
 protocol/*.[ch]
 waycopy
+waypaste

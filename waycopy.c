@@ -22,30 +22,6 @@ FILE *temp;
 bool running = 1;
 
 void
-copyfile(FILE *out, FILE *in)
-{
-	char buf[BUFSIZ];
-
-	size_t rcount, wcount;
-	do {
-		rcount = fread(buf, 1, BUFSIZ, in);
-		wcount = fwrite(buf, 1, rcount, out);
-		if (rcount < BUFSIZ) {
-			if (ferror(in)) {
-				// TODO: print actual error
-				warn("fread failed");
-			} else if (feof(in)) {
-				break;
-			}
-		}
-
-		if (wcount < rcount) {
-			warn("fwrite failed");
-		}
-	} while (1);
-}
-
-void
 registry_global(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version)
 {
 	if (strcmp(interface, "wl_seat") == 0) {
