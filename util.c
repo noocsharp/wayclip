@@ -12,3 +12,9 @@ die(const char *const error)
 	exit(1);
 }
 
+void
+warn(const char *const error)
+{
+	fprintf(stderr, "%s: warning: %s\n", argv0, error);
+}
+

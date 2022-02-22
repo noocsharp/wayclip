@@ -1,7 +1,9 @@
 #include <assert.h>
+#include <limits.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <wayland-client.h>
 #include <unistd.h>
 
@@ -15,9 +17,33 @@ char mimetype[MIMETYPE_MAX_SIZE];
 
 struct zwlr_data_control_manager_v1 *data_control_manager;
 struct wl_seat *seat;
+FILE *temp;
 
-int destfd;
 bool running = 1;
+
+void
+copyfile(FILE *out, FILE *in)
+{
+	char buf[BUFSIZ];
+
+	size_t rcount, wcount;
+	do {
+		rcount = fread(buf, 1, BUFSIZ, in);
+		wcount = fwrite(buf, 1, rcount, out);
+		if (rcount < BUFSIZ) {
+			if (ferror(in)) {
+				// TODO: print actual error
+				warn("fread failed");
+			} else if (feof(in)) {
+				break;
+			}
+		}
+
+		if (wcount < rcount) {
+			warn("fwrite failed");
+		}
+	} while (1);
+}
 
 void
 registry_global(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version)
@@ -42,20 +68,14 @@ static const struct wl_registry_listener registry_listener = {
 void
 data_source_send(void *data, struct zwlr_data_control_source_v1 *source, const char *mime_type, int32_t fd)
 {
-	char *buf = "this is some text", *ptr = buf;
-	int len = strlen(buf);
-	while (len) {
-		int ret = write(fd, ptr, len);
-		if (ret == -1) {
-			fprintf(stderr, "write failed\n");
-			return;
-		}
-
-		len -= ret;
-		ptr += ret;
+	fseek(temp, SEEK_SET, 0);
+	FILE *out = fdopen(fd, "w");
+	if (out == NULL) {
+		warn("failed to open fd as FILE");
 	}
 
-	close(fd);
+	copyfile(out, temp);
+	fclose(out);
 }
 
 void
@@ -69,10 +89,36 @@ static const struct zwlr_data_control_source_v1_listener data_source_listener = 
 	.cancelled = data_source_cancelled,
 };
 
+const char *const tempname = "/waycopy-buffer-XXXXXX";
+
 int
 main(int argc, const char *argv[])
 {
 	argv0 = argv[0];
+
+	char path[PATH_MAX] = {0};
+	char *ptr = getenv("TMPDIR");
+	if (ptr == NULL)
+		strcpy(path, "/tmp");
+	else {
+		if (strlen(ptr) > PATH_MAX - strlen(tempname))
+			die("TMPDIR has too long of a path");
+
+		strcpy(path, ptr);
+	}
+
+	strncat(path, tempname, PATH_MAX - 1);
+	int tempfd = mkstemp(path);
+	if (tempfd == -1)
+		die("failed to create temporary file for copy buffer");
+
+	temp = fdopen(tempfd, "r+");
+	if (temp == NULL) {
+		die("failed to open temporary file as FILE");
+	}
+
+	copyfile(temp, stdin);
+	fclose(stdin);
 
 	struct wl_display *const display = wl_display_connect(NULL);
 	if (display == NULL)
@@ -106,5 +152,6 @@ main(int argc, const char *argv[])
 
 	while (wl_display_dispatch(display) != -1 && running);
 
-	return 1;
+	unlink(path);
+	return running;
 }
