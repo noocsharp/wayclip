@@ -12,7 +12,6 @@
 struct zwlr_data_control_manager_v1 *data_control_manager;
 struct wl_seat *seat;
 struct wl_display *display;
-int pipes[2];
 
 void
 registry_global(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version)
@@ -37,6 +36,7 @@ static const struct wl_registry_listener registry_listener = {
 void
 offer_offer(void *data, struct zwlr_data_control_offer_v1 *offer, const char *mime_type)
 {
+	int pipes[2];
 	if (strcmp(mime_type, "text/plain") == 0) {
 		if (pipe(pipes) == -1)
 			die("failed to create pipe");
