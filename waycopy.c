@@ -12,9 +12,6 @@
 #include "common.h"
 #include "util.h"
 
-#define MIMETYPE_MAX_SIZE 256
-char mimetype[MIMETYPE_MAX_SIZE];
-
 struct wl_registry *registry;
 int temp;
 
