@@ -23,17 +23,17 @@ warn(const char *const error)
 void
 copyfd(int out, int in)
 {
-	char buf[BUFSIZ], *ptr;
+	char buf[BUFSIZ];
 
-	size_t rcount, wcount;
 	do {
-		rcount = read(in, buf, BUFSIZ);
+		ssize_t rcount = read(in, buf, BUFSIZ);
 		if (rcount == -1) {
 			warn("read failed");
+			return;
 		}
 
-		wcount = 0;
-		ptr = buf;
+		size_t wcount = 0;
+		char *ptr = buf;
 		while (wcount < rcount) {
 			ssize_t len = write(out, ptr, rcount);
 			if (len == -1) {
