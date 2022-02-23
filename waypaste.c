@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <limits.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,15 +10,47 @@
 #include "protocol/wlr-data-control-unstable-v1-client-protocol.h"
 #include "util.h"
 
+extern const char *argv0;
+
+extern struct {
+	const char *type;
+	const char *seat;
+} options;
+
+bool seat_found = false;
+
 struct zwlr_data_control_manager_v1 *data_control_manager;
 struct wl_seat *seat;
 struct wl_display *display;
 
 void
+seat_capabilities(void *data, struct wl_seat *seat, uint32_t cap)
+{
+}
+
+void
+seat_name(void *data, struct wl_seat *_seat, const char *name)
+{
+	if (!seat_found && strcmp(name, options.seat) == 0) {
+		seat_found = true;
+		seat = _seat;
+	} else wl_seat_destroy(_seat);
+}
+
+struct wl_seat_listener seat_listener = {
+	.capabilities = seat_capabilities,
+	.name = seat_name,
+};
+
+void
 registry_global(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version)
 {
-	if (strcmp(interface, "wl_seat") == 0) {
-		seat = wl_registry_bind(registry, name, &wl_seat_interface, 1);
+	if (!seat_found && strcmp(interface, "wl_seat") == 0) {
+		seat = wl_registry_bind(registry, name, &wl_seat_interface, 2);
+		if (options.seat) {
+			wl_seat_add_listener(seat, &seat_listener, NULL);
+			seat = NULL;
+		} else seat_found = true;
 	} else if (strcmp(interface, "zwlr_data_control_manager_v1") == 0) {
 		data_control_manager = wl_registry_bind(registry, name, &zwlr_data_control_manager_v1_interface, 1);
 	}
@@ -37,7 +70,7 @@ void
 offer_offer(void *data, struct zwlr_data_control_offer_v1 *offer, const char *mime_type)
 {
 	int pipes[2];
-	if (strcmp(mime_type, "text/plain") == 0) {
+	if (strcmp(mime_type, options.type) == 0) {
 		if (pipe(pipes) == -1)
 			die("failed to create pipe");
 
@@ -74,8 +107,14 @@ static const struct zwlr_data_control_device_v1_listener device_listener = {
 };
 
 int
-main()
+main(int argc, char *argv[])
 {
+	argv0 = argv[0];
+
+	options.type = "text/plain";
+	options.seat = NULL;
+	parseopts(argc, argv);
+
 	display = wl_display_connect(NULL);
 	if (display == NULL)
 		die("failed to connect to display");
@@ -86,6 +125,7 @@ main()
 
 	wl_registry_add_listener(registry, &registry_listener, NULL);
 
+	wl_display_roundtrip(display);
 	wl_display_roundtrip(display);
 
 	if (seat == NULL)
