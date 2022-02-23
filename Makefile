@@ -3,11 +3,11 @@
 
 all: waycopy waypaste
 
-waypaste: protocol/wlr-data-control-unstable-v1-client-protocol.h protocol/wlr-data-control-unstable-v1.o waypaste.o util.o
-	$(CC) protocol/wlr-data-control-unstable-v1.o waypaste.o util.o -lwayland-client -o waypaste
+waypaste: protocol/wlr-data-control-unstable-v1-client-protocol.h protocol/wlr-data-control-unstable-v1.o waypaste.o common.o util.o
+	$(CC) protocol/wlr-data-control-unstable-v1.o waypaste.o common.o util.o -lwayland-client -o waypaste
 
-waycopy: protocol/wlr-data-control-unstable-v1-client-protocol.h protocol/wlr-data-control-unstable-v1.o waycopy.o util.o
-	$(CC) protocol/wlr-data-control-unstable-v1.o waycopy.o util.o -lwayland-client -o waycopy
+waycopy: protocol/wlr-data-control-unstable-v1-client-protocol.h protocol/wlr-data-control-unstable-v1.o waycopy.o common.o util.o
+	$(CC) protocol/wlr-data-control-unstable-v1.o waycopy.o util.o common.o -lwayland-client -o waycopy
 
 protocol/wlr-data-control-unstable-v1.c:
 	wayland-scanner private-code protocol/wlr-data-control-unstable-v1.xml protocol/wlr-data-control-unstable-v1.c

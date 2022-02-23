@@ -9,69 +9,16 @@
 #include <unistd.h>
 
 #include "protocol/wlr-data-control-unstable-v1-client-protocol.h"
+#include "common.h"
 #include "util.h"
-
-extern const char *argv0;
-
-extern struct {
-	const char *type;
-	const char *seat;
-} options;
 
 #define MIMETYPE_MAX_SIZE 256
 char mimetype[MIMETYPE_MAX_SIZE];
 
-struct zwlr_data_control_manager_v1 *data_control_manager;
-struct wl_seat *seat;
 struct wl_registry *registry;
 int temp;
 
-bool running = true, seat_found = false;
-
-void
-seat_capabilities(void *data, struct wl_seat *seat, uint32_t cap)
-{
-}
-
-void
-seat_name(void *data, struct wl_seat *_seat, const char *name)
-{
-	if (!seat_found && strcmp(name, options.seat) == 0) {
-		seat_found = true;
-		seat = _seat;
-	}
-	else
-		wl_seat_destroy(_seat);
-}
-
-struct wl_seat_listener seat_listener = {
-	.capabilities = seat_capabilities,
-	.name = seat_name,
-};
-
-void
-registry_global(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version)
-{
-	if (!seat_found && strcmp(interface, "wl_seat") == 0) {
-		seat = wl_registry_bind(registry, name, &wl_seat_interface, 2);
-		if (options.seat) {
-			wl_seat_add_listener(seat, &seat_listener, NULL);
-			seat = NULL;
-		} else seat_found = true;
-	} else if (strcmp(interface, "zwlr_data_control_manager_v1") == 0) {
-		data_control_manager = wl_registry_bind(registry, name, &zwlr_data_control_manager_v1_interface, 1);
-	}
-}
-
-void
-registry_global_remove(void *data, struct wl_registry *registry, uint32_t name)
-{
-}
-
-static const struct wl_registry_listener registry_listener = {
-	.global = registry_global,
-	.global_remove = registry_global_remove,
-};
+bool running = true;
 
 void
 data_source_send(void *data, struct zwlr_data_control_source_v1 *source, const char *mime_type, int32_t fd)
