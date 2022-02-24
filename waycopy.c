@@ -64,6 +64,8 @@ main(int argc, char *argv[])
 	if (temp == -1)
 		die("failed to create temporary file for copy buffer");
 
+	if (unlink(path) == -1)
+		die("failed to remove temporary file");
 	copyfd(temp, STDIN_FILENO);
 	close(STDIN_FILENO);
 
@@ -100,6 +102,5 @@ main(int argc, char *argv[])
 
 	while (wl_display_dispatch(display) != -1 && running);
 
-	unlink(path);
 	return running;
 }
