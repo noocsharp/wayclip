@@ -2,8 +2,9 @@ PREFIX = /usr/local
 LIB = -lwayland-client
 WAYCOPY_OBJ = protocol/wlr-data-control-unstable-v1.o waycopy.o common.o util.o
 WAYPASTE_OBJ = protocol/wlr-data-control-unstable-v1.o waypaste.o common.o util.o
+EXE = waycopy waypaste
 
-all: waycopy waypaste
+all: $(EXE)
 
 waypaste: protocol/wlr-data-control-unstable-v1-client-protocol.h $(WAYPASTE_OBJ)
 	$(CC) $(WAYPASTE_OBJ) $(LIB) -o $@
@@ -27,4 +28,4 @@ uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/waycopy $(DESTDIR)$(PREFIX)/bin/waypaste
 
 clean:
-	rm -f *.o waycopy protocol/*.[och]
+	rm -f *.o $(EXE) protocol/*.[och]
