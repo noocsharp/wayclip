@@ -23,14 +23,13 @@ offer_offer(void *data, struct zwlr_data_control_offer_v1 *offer, const char *mi
 
 		zwlr_data_control_offer_v1_receive(offer, mime_type, pipes[1]);
 		wl_display_roundtrip(display);
-	} else {
-		return;
+		close(pipes[1]);
+
+		copyfd(STDOUT_FILENO, pipes[0]);
+		close(pipes[0]);
+
+		exit(0);
 	}
-
-	copyfd(STDOUT_FILENO, pipes[0]);
-	close(pipes[0]);
-
-	exit(0);
 }
 
 static const struct zwlr_data_control_offer_v1_listener offer_listener = {

@@ -44,7 +44,7 @@ copyfd(int out, int in)
 			ptr += len;
 			wcount += len;
 		}
-		if (rcount < BUFSIZ)
+		if (!rcount)
 			break;
 	} while (1);
 }
