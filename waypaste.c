@@ -59,7 +59,7 @@ main(int argc, char *argv[])
 
 	options.type = "text/plain";
 	options.seat = NULL;
-	parseopts(argc, argv);
+	parseopts("s:t:", argc, argv);
 
 	display = wl_display_connect(NULL);
 	if (display == NULL)

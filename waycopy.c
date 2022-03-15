@@ -47,7 +47,7 @@ main(int argc, char *argv[])
 
 	options.type = "text/plain";
 	options.seat = NULL;
-	parseopts(argc, argv);
+	parseopts("fs:t:", argc, argv);
 
 	char path[PATH_MAX] = {0};
 	char *ptr = getenv("TMPDIR");
@@ -100,6 +100,18 @@ main(int argc, char *argv[])
 	zwlr_data_control_source_v1_offer(source, options.type);
 	zwlr_data_control_source_v1_add_listener(source, &data_source_listener, NULL);
 	zwlr_data_control_device_v1_set_selection(device, source);
+
+	if (!options.foreground) {
+		pid_t pid = fork();
+		if (pid == -1) {
+			die("failed to fork");
+		}
+
+		if (pid != 0) {
+			close(STDERR_FILENO);
+			return 0;
+		}
+	}
 
 	while (wl_display_dispatch(display) != -1 && running);
 

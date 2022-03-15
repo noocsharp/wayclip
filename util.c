@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -52,13 +53,14 @@ copyfd(int out, int in)
 struct {
 	const char *type;
 	const char *seat;
+	bool foreground;
 } options;
 
 void
-parseopts(int argc, char *const argv[])
+parseopts(const char *opts, int argc, char *const argv[])
 {
 	while (1) {
-		int next = getopt(argc, argv, "s:t:");
+		int next = getopt(argc, argv, opts);
 		if (next == -1) {
 			if (argv[optind] && *argv[optind] != '-') {
 				fprintf(stderr, "usage: %s [-s seat] [-t mimetype]\n", argv0);
@@ -72,6 +74,9 @@ parseopts(int argc, char *const argv[])
 		}
 
 		switch (next) {
+		case 'f':
+			options.foreground = true;
+			break;
 		case 's':
 			options.seat = optarg;
 			break;

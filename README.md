@@ -17,7 +17,7 @@ To copy data, just pipe it into `waycopy`, and optionally specify a seat and mim
 ```
 $ echo "howdy" | waycopy -s seat0 -t text/plain &
 ```
-(note that `waycopy` does not automatically fork into the background)
+(note that `waycopy` will fork into the background)
 
 To paste, optionally specify a seat and desired mimetype:
 ```

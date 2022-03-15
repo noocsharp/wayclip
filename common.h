@@ -9,4 +9,5 @@ extern const char *argv0;
 extern struct {
 	const char *type;
 	const char *seat;
+	bool foreground;
 } options;
