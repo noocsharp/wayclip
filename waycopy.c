@@ -81,7 +81,8 @@ main(int argc, char *argv[])
 	wl_registry_add_listener(registry, &registry_listener, NULL);
 
 	wl_display_roundtrip(display);
-	wl_display_roundtrip(display);
+	if (options.seat)
+		wl_display_roundtrip(display);
 
 	if (seat == NULL)
 		die("failed to bind to seat interface");
