@@ -15,7 +15,7 @@ in the following ways:
 To copy data, just pipe it into `waycopy`, and optionally specify a seat and mimetype:
 
 ```
-$ echo "howdy" | waycopy -s seat0 -t text/plain &
+$ echo "howdy" | waycopy -s seat0 -t text/plain
 ```
 (note that `waycopy` will fork into the background)
 
