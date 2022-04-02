@@ -1,3 +1,4 @@
+.POSIX:
 PREFIX = /usr/local
 LIB = -lwayland-client
 WAYCOPY_OBJ = protocol/wlr-data-control-unstable-v1.o waycopy.o common.o util.o

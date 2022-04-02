@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 1
+
 #include <assert.h>
 #include <fcntl.h>
 #include <limits.h>
