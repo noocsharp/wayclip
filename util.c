@@ -22,7 +22,7 @@ warn(const char *const error)
 }
 
 void
-copyfd(int out, int in)
+copyfd(const int out, const int in)
 {
 	char buf[BUFSIZ];
 
