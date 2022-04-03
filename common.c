@@ -25,9 +25,7 @@ seat_name(void *data, struct wl_seat *_seat, const char *name)
 	if (!seat_found && strcmp(name, options.seat) == 0) {
 		seat_found = true;
 		seat = _seat;
-	}
-	else
-		wl_seat_destroy(_seat);
+	} else wl_seat_destroy(_seat);
 }
 
 const struct wl_seat_listener seat_listener = {
