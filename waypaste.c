@@ -56,9 +56,6 @@ int
 main(int argc, char *argv[])
 {
 	argv0 = argv[0];
-
-	options.type = "text/plain";
-	options.seat = NULL;
 	parseopts("s:t:", argc, argv);
 
 	display = wl_display_connect(NULL);

@@ -54,7 +54,9 @@ struct {
 	const char *type;
 	const char *seat;
 	bool foreground;
-} options;
+} options = {
+	.type = "text/plain"
+};
 
 void
 parseopts(const char *opts, int argc, char *const argv[])

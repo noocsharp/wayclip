@@ -3,11 +3,7 @@
 #include <wayland-client.h>
 
 #include "protocol/wlr-data-control-unstable-v1-client-protocol.h"
-
-extern struct {
-	const char *type;
-	const char *seat;
-} options;
+#include "common.h"
 
 bool seat_found = false;
 

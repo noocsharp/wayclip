@@ -46,9 +46,6 @@ main(int argc, char *argv[])
 {
 	close(STDOUT_FILENO);
 	argv0 = argv[0];
-
-	options.type = "text/plain";
-	options.seat = NULL;
 	parseopts("fs:t:", argc, argv);
 
 	char path[PATH_MAX] = {0};
