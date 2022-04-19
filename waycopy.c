@@ -44,7 +44,6 @@ const char *const tempname = "/waycopy-buffer-XXXXXX";
 int
 main(int argc, char *argv[])
 {
-	close(STDOUT_FILENO);
 	argv0 = argv[0];
 	parseopts("fs:t:", argc, argv);
 
