@@ -56,7 +56,7 @@ struct {
 	const char *seat;
 	bool foreground;
 } options = {
-	.type = "text/plain"
+	.type = "text/plain;charset=utf-8"
 };
 
 void
