@@ -12,7 +12,6 @@
 
 #include "protocol/wlr-data-control-unstable-v1-client-protocol.h"
 #include "common.h"
-#include "util.h"
 
 struct wl_registry *registry;
 int temp;

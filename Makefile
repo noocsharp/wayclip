@@ -1,8 +1,8 @@
 .POSIX:
 PREFIX = /usr/local
 LIB = -lwayland-client
-WAYCOPY_OBJ = protocol/wlr-data-control-unstable-v1.o waycopy.o common.o util.o
-WAYPASTE_OBJ = protocol/wlr-data-control-unstable-v1.o waypaste.o common.o util.o
+WAYCOPY_OBJ = protocol/wlr-data-control-unstable-v1.o waycopy.o common.o
+WAYPASTE_OBJ = protocol/wlr-data-control-unstable-v1.o waypaste.o common.o
 EXE = waycopy waypaste
 
 all: $(EXE)
