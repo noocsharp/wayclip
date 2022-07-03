@@ -102,9 +102,8 @@ main(int argc, char *argv[])
 
 	if (!options.foreground) {
 		pid_t pid = fork();
-		if (pid == -1) {
+		if (pid == -1)
 			die("failed to fork");
-		}
 
 		if (pid != 0) {
 			close(STDERR_FILENO);

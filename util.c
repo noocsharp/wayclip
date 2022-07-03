@@ -72,15 +72,14 @@ parseopts(const char *opts, int argc, char *const argv[])
 	while (1) {
 		int next = getopt(argc, argv, opts);
 		if (next == -1) {
-			if (argv[optind] && *argv[optind] != '-') {
+			if (argv[optind] && *argv[optind] != '-')
 				usage(1);
-			}
+
 			break;
 		}
 
-		if (next == ':' || next == '?') {
+		if (next == ':' || next == '?')
 			exit(1);
-		}
 
 		switch (next) {
 		case 'f':
@@ -92,9 +91,9 @@ parseopts(const char *opts, int argc, char *const argv[])
 			options.seat = optarg;
 			break;
 		case 't':
-			if (strlen(optarg) > 255) {
+			if (strlen(optarg) > 255)
 				die("mimetype can be at most 255 characters");
-			}
+
 			options.type = optarg;
 			break;
 		}
