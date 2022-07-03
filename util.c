@@ -59,6 +59,13 @@ struct {
 	.type = "text/plain;charset=utf-8"
 };
 
+static void
+usage(int code)
+{
+	fprintf(stderr, "usage: %s [-s seat] [-t mimetype]\n", argv0);
+	exit(code);
+}
+
 void
 parseopts(const char *opts, int argc, char *const argv[])
 {
@@ -66,8 +73,7 @@ parseopts(const char *opts, int argc, char *const argv[])
 		int next = getopt(argc, argv, opts);
 		if (next == -1) {
 			if (argv[optind] && *argv[optind] != '-') {
-				fprintf(stderr, "usage: %s [-s seat] [-t mimetype]\n", argv0);
-				exit(1);
+				usage(1);
 			}
 			break;
 		}
@@ -80,6 +86,8 @@ parseopts(const char *opts, int argc, char *const argv[])
 		case 'f':
 			options.foreground = true;
 			break;
+		case 'h':
+			usage(0);
 		case 's':
 			options.seat = optarg;
 			break;

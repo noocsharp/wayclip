@@ -56,7 +56,7 @@ int
 main(int argc, char *argv[])
 {
 	argv0 = argv[0];
-	parseopts("s:t:", argc, argv);
+	parseopts("hs:t:", argc, argv);
 
 	display = wl_display_connect(NULL);
 	if (display == NULL)

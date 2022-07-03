@@ -45,7 +45,7 @@ int
 main(int argc, char *argv[])
 {
 	argv0 = argv[0];
-	parseopts("fs:t:", argc, argv);
+	parseopts("hfs:t:", argc, argv);
 
 	char path[PATH_MAX] = {0};
 	char *ptr = getenv("TMPDIR");
