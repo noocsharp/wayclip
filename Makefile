@@ -1,5 +1,6 @@
 .POSIX:
 PREFIX = /usr/local
+MANPREFIX = $(PREFIX)/share/man
 LIB = -lwayland-client
 WAYCOPY_OBJ = protocol/wlr-data-control-unstable-v1.o waycopy.o common.o
 WAYPASTE_OBJ = protocol/wlr-data-control-unstable-v1.o waypaste.o common.o
@@ -24,9 +25,11 @@ protocol/wlr-data-control-unstable-v1-client-protocol.h:
 
 install:
 	install -Dm755 -t $(DESTDIR)$(PREFIX)/bin waycopy waypaste
+	install -Dm644 -t $(DESTDIR)$(MANPREFIX)/man1 waycopy.1 waypaste.1
 
 uninstall:
-	rm -f $(DESTDIR)$(PREFIX)/bin/waycopy $(DESTDIR)$(PREFIX)/bin/waypaste
+	rm -f $(DESTDIR)$(PREFIX)/bin/waycopy $(DESTDIR)$(PREFIX)/bin/waypaste \
+	      $(DESTDIR)$(MANPREFIX)/man1/waycopy.1 $(DESTDIR)$(MANPREFIX)/man1/waypaste.1
 
 clean:
 	rm -f *.o $(EXE) protocol/*.[och]

@@ -1,0 +1,28 @@
+.Dd 2020-07-30
+.Dt WAYPASTE 1
+.Os
+.Sh NAME
+.Nm waypaste
+.Nd paste data from the clipboard
+.Sh SYNOPSIS
+.Nm
+.Op Fl s Ar seat
+.Op Fl t Ar mimetype
+.Sh DESCRIPTION
+.Nm
+pastes data to standard out from the clipboard using the wlr-data-control
+Wayland extension protocol.
+.Bl -tag -width Ds
+.It Fl s Ar seat
+The name of the seat to use
+.Po
+defaults to the first seat sent by the compositor
+.Pc
+.It Fl t Ar mimetype
+The mimetype of the data
+.Po
+defaults to "text/plain;charset=utf-8"
+.Pc
+.El
+.Sh AUTHORS
+.An Nihal Jere Aq Mt nihal@nihaljere.xyz
