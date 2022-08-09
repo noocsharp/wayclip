@@ -2,29 +2,34 @@
 PREFIX = /usr/local
 MANPREFIX = $(PREFIX)/share/man
 LIB = -lwayland-client
-WAYCOPY_OBJ = protocol/wlr-data-control-unstable-v1.o waycopy.o common.o
-WAYPASTE_OBJ = protocol/wlr-data-control-unstable-v1.o waypaste.o common.o
 EXE = waycopy waypaste
+OBJ_COMMON = protocol/wlr-data-control-unstable-v1.o common.o
 
 all: $(EXE)
 
-waypaste: protocol/wlr-data-control-unstable-v1-client-protocol.h $(WAYPASTE_OBJ)
-	$(CC) $(WAYPASTE_OBJ) $(LIB) -o $@
+waypaste: waypaste.o $(OBJ_COMMON)
+	$(CC) $< $(OBJ_COMMON) $(LIB) -o $@
 
-waycopy: protocol/wlr-data-control-unstable-v1-client-protocol.h $(WAYCOPY_OBJ)
-	$(CC) $(WAYCOPY_OBJ) $(LIB) -o $@
+waycopy: waycopy.o $(OBJ_COMMON)
+	$(CC) $< $(OBJ_COMMON) $(LIB) -o $@
 
-protocol/wlr-data-control-unstable-v1.c:
-	wayland-scanner private-code protocol/wlr-data-control-unstable-v1.xml protocol/wlr-data-control-unstable-v1.c
+waycopy.o: waycopy.c common.h protocol/wlr-data-control-unstable-v1-client-protocol.h
+	$(CC) -Wall -Wpedantic -c $< -o $@
 
-protocol/wlr-data-control-unstable-v1-client-protocol.h:
-	wayland-scanner client-header protocol/wlr-data-control-unstable-v1.xml protocol/wlr-data-control-unstable-v1-client-protocol.h
+waypaste.o: waypaste.c common.h protocol/wlr-data-control-unstable-v1-client-protocol.h
+	$(CC) -Wall -Wpedantic -c $< -o $@
+
+protocol/wlr-data-control-unstable-v1.c: protocol/wlr-data-control-unstable-v1.xml
+	wayland-scanner private-code $< $@
+
+protocol/wlr-data-control-unstable-v1-client-protocol.h: protocol/wlr-data-control-unstable-v1.xml
+	wayland-scanner client-header $< $@
 
 .c.o:
 	$(CC) -Wall -Wpedantic -c $< -o $@
 
 install:
-	install -Dm755 -t $(DESTDIR)$(PREFIX)/bin waycopy waypaste
+	install -Dm755 -t $(DESTDIR)$(PREFIX)/bin $(EXE)
 	install -Dm644 -t $(DESTDIR)$(MANPREFIX)/man1 waycopy.1 waypaste.1
 
 uninstall:
