@@ -10,7 +10,7 @@
 #include "common.h"
 
 const char *argv0;
-bool seat_found = false;
+static bool seat_found = false;
 
 struct wl_seat *seat;
 struct zwlr_data_control_manager_v1 *data_control_manager;
@@ -33,7 +33,7 @@ seat_name(void *data, struct wl_seat *_seat, const char *name)
 	} else wl_seat_destroy(_seat);
 }
 
-const struct wl_seat_listener seat_listener = {
+static const struct wl_seat_listener seat_listener = {
 	.capabilities = seat_capabilities,
 	.name = seat_name,
 };
