@@ -8,22 +8,22 @@ OBJ_COMMON = protocol/wlr-data-control-unstable-v1.o common.o
 all: $(EXE)
 
 waypaste: waypaste.o $(OBJ_COMMON)
-	$(CC) $< $(OBJ_COMMON) $(LIB) -o $@
+	$(CC) waypaste.o $(OBJ_COMMON) $(LIB) -o $@
 
 waycopy: waycopy.o $(OBJ_COMMON)
-	$(CC) $< $(OBJ_COMMON) $(LIB) -o $@
+	$(CC) waycopy.o $(OBJ_COMMON) $(LIB) -o $@
 
 waycopy.o: waycopy.c common.h protocol/wlr-data-control-unstable-v1-client-protocol.h
-	$(CC) -Wall -Wpedantic -c $< -o $@
+	$(CC) -Wall -Wpedantic -c waycopy.c -o $@
 
 waypaste.o: waypaste.c common.h protocol/wlr-data-control-unstable-v1-client-protocol.h
-	$(CC) -Wall -Wpedantic -c $< -o $@
+	$(CC) -Wall -Wpedantic -c waypaste.c -o $@
 
 protocol/wlr-data-control-unstable-v1.c: protocol/wlr-data-control-unstable-v1.xml
-	wayland-scanner private-code $< $@
+	wayland-scanner private-code protocol/wlr-data-control-unstable-v1.xml $@
 
 protocol/wlr-data-control-unstable-v1-client-protocol.h: protocol/wlr-data-control-unstable-v1.xml
-	wayland-scanner client-header $< $@
+	wayland-scanner client-header protocol/wlr-data-control-unstable-v1.xml $@
 
 .c.o:
 	$(CC) -Wall -Wpedantic -c $< -o $@
