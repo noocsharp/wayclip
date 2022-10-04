@@ -26,7 +26,7 @@ protocol/wlr-data-control-unstable-v1-client-protocol.h: protocol/wlr-data-contr
 	wayland-scanner client-header protocol/wlr-data-control-unstable-v1.xml $@
 
 .c.o:
-	$(CC) -Wall -Wpedantic -c $< -o $@
+	$(CC) -Wall -Wpedantic $(CFLAGS) -c $< -o $@
 
 install:
 	install -Dm755 -t $(DESTDIR)$(PREFIX)/bin $(EXE)
