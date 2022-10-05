@@ -42,7 +42,7 @@ int
 main(int argc, char *argv[])
 {
 	argv0 = argv[0];
-	parseopts("hfs:t:", argc, argv);
+	parseopts("hfps:t:", argc, argv);
 
 	char path[PATH_MAX] = {0};
 	char *ptr = getenv("TMPDIR");
@@ -95,7 +95,11 @@ main(int argc, char *argv[])
 
 	zwlr_data_control_source_v1_offer(source, options.type);
 	zwlr_data_control_source_v1_add_listener(source, &data_source_listener, NULL);
-	zwlr_data_control_device_v1_set_selection(device, source);
+
+	if (options.primary)
+		zwlr_data_control_device_v1_set_primary_selection(device, source);
+	else
+		zwlr_data_control_device_v1_set_selection(device, source);
 
 	if (!options.foreground) {
 		pid_t pid = fork();

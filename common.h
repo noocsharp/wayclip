@@ -8,6 +8,7 @@ extern struct options {
 	const char *type;
 	const char *seat;
 	bool foreground;
+	bool primary;
 } options;
 
 void die(const char *const error);

@@ -48,7 +48,7 @@ registry_global(void *data, struct wl_registry *registry, uint32_t name, const c
 			seat = NULL;
 		} else seat_found = true;
 	} else if (strcmp(interface, "zwlr_data_control_manager_v1") == 0) {
-		data_control_manager = wl_registry_bind(registry, name, &zwlr_data_control_manager_v1_interface, 1);
+		data_control_manager = wl_registry_bind(registry, name, &zwlr_data_control_manager_v1_interface, 2);
 	}
 }
 
@@ -132,6 +132,9 @@ parseopts(const char *opts, int argc, char *const argv[])
 			break;
 		case 'h':
 			usage(0);
+		case 'p':
+			options.primary = true;
+			break;
 		case 's':
 			options.seat = optarg;
 			break;
