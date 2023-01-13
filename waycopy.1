@@ -6,6 +6,7 @@
 .Nd copy data to the clipboard
 .Sh SYNOPSIS
 .Nm
+.Op Fl p
 .Op Fl s Ar seat
 .Op Fl t Ar mimetype
 .Sh DESCRIPTION
@@ -13,6 +14,8 @@
 copies data from standard in to the clipboard using the wlr-data-control
 Wayland extension protocol.
 .Bl -tag -width Ds
+.It Fl p
+Use primary clipboard
 .It Fl s Ar seat
 The name of the seat to use
 .Po
