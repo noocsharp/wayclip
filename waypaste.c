@@ -9,23 +9,14 @@
 #include "common.h"
 
 struct wl_display *display;
+struct zwlr_data_control_offer_v1 *curoffer = NULL;
 
 void
 offer_offer(void *data, struct zwlr_data_control_offer_v1 *offer, const char *mime_type)
 {
-	int pipes[2];
-	if (strcmp(mime_type, options.type) == 0) {
-		if (pipe(pipes) == -1)
-			die("failed to create pipe");
-
-		zwlr_data_control_offer_v1_receive(offer, mime_type, pipes[1]);
-		wl_display_roundtrip(display);
-		close(pipes[1]);
-
-		copyfd(STDOUT_FILENO, pipes[0]);
-		close(pipes[0]);
-
-		exit(0);
+	if (strcmp(mime_type, options.type) != 0) {
+		zwlr_data_control_offer_v1_destroy(offer);
+		curoffer = NULL;
 	}
 }
 
@@ -37,23 +28,51 @@ void
 control_data_offer(void *data, struct zwlr_data_control_device_v1 *device, struct zwlr_data_control_offer_v1 *offer)
 {
 	zwlr_data_control_offer_v1_add_listener(offer, &offer_listener, NULL);
+	curoffer = offer;
+}
+
+static void
+receive(struct zwlr_data_control_offer_v1 *offer)
+{
+	int pipes[2];
+	if (pipe(pipes) == -1)
+		die("failed to create pipe");
+
+	zwlr_data_control_offer_v1_receive(offer, options.type, pipes[1]);
+	wl_display_roundtrip(display);
+	close(pipes[1]);
+
+	copyfd(STDOUT_FILENO, pipes[0]);
+	close(pipes[0]);
+
+	exit(0);
 }
 
 void
 control_data_selection(void *data, struct zwlr_data_control_device_v1 *device, struct zwlr_data_control_offer_v1 *offer)
 {
+	if (!options.primary && curoffer)
+		receive(offer);
+}
+
+void
+control_data_primary_selection(void *data, struct zwlr_data_control_device_v1 *device, struct zwlr_data_control_offer_v1 *offer)
+{
+	if (options.primary && curoffer)
+		receive(offer);
 }
 
 static const struct zwlr_data_control_device_v1_listener device_listener = {
 	.data_offer = control_data_offer,
 	.selection = control_data_selection,
+	.primary_selection = control_data_primary_selection,
 };
 
 int
 main(int argc, char *argv[])
 {
 	argv0 = argv[0];
-	parseopts("hs:t:", argc, argv);
+	parseopts("hps:t:", argc, argv);
 
 	display = wl_display_connect(NULL);
 	if (display == NULL)
