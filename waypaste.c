@@ -9,15 +9,37 @@
 #include "common.h"
 
 struct wl_display *display;
-struct zwlr_data_control_offer_v1 *curoffer = NULL;
+struct zwlr_data_control_offer_v1 *acceptedoffer = NULL;
+int pipes[2];
+
+static void
+receive(int cond, struct zwlr_data_control_offer_v1 *offer)
+{
+	if (cond && acceptedoffer == offer) {
+		zwlr_data_control_offer_v1_receive(offer, options.type, pipes[1]);
+		wl_display_roundtrip(display);
+		close(pipes[1]);
+
+		copyfd(STDOUT_FILENO, pipes[0]);
+		close(pipes[0]);
+
+		exit(0);
+	}
+
+	if (acceptedoffer)
+		zwlr_data_control_offer_v1_destroy(acceptedoffer);
+
+	acceptedoffer = NULL;
+}
 
 void
 offer_offer(void *data, struct zwlr_data_control_offer_v1 *offer, const char *mime_type)
 {
-	if (strcmp(mime_type, options.type) != 0) {
-		zwlr_data_control_offer_v1_destroy(offer);
-		curoffer = NULL;
-	}
+	if (acceptedoffer)
+		return;
+
+	if (strcmp(mime_type, options.type) == 0)
+		acceptedoffer = offer;
 }
 
 static const struct zwlr_data_control_offer_v1_listener offer_listener = {
@@ -28,38 +50,18 @@ void
 control_data_offer(void *data, struct zwlr_data_control_device_v1 *device, struct zwlr_data_control_offer_v1 *offer)
 {
 	zwlr_data_control_offer_v1_add_listener(offer, &offer_listener, NULL);
-	curoffer = offer;
-}
-
-static void
-receive(struct zwlr_data_control_offer_v1 *offer)
-{
-	int pipes[2];
-	if (pipe(pipes) == -1)
-		die("failed to create pipe");
-
-	zwlr_data_control_offer_v1_receive(offer, options.type, pipes[1]);
-	wl_display_roundtrip(display);
-	close(pipes[1]);
-
-	copyfd(STDOUT_FILENO, pipes[0]);
-	close(pipes[0]);
-
-	exit(0);
 }
 
 void
 control_data_selection(void *data, struct zwlr_data_control_device_v1 *device, struct zwlr_data_control_offer_v1 *offer)
 {
-	if (!options.primary && curoffer)
-		receive(offer);
+	receive(!options.primary, offer);
 }
 
 void
 control_data_primary_selection(void *data, struct zwlr_data_control_device_v1 *device, struct zwlr_data_control_offer_v1 *offer)
 {
-	if (options.primary && curoffer)
-		receive(offer);
+	receive(options.primary, offer);
 }
 
 static const struct zwlr_data_control_device_v1_listener device_listener = {
@@ -93,6 +95,9 @@ main(int argc, char *argv[])
 
 	if (data_control_manager == NULL)
 		die("failed to bind to data_control_manager interface");
+
+	if (pipe(pipes) == -1)
+		die("failed to create pipe");
 
 	struct zwlr_data_control_device_v1 *device = zwlr_data_control_manager_v1_get_data_device(data_control_manager, seat);
 	if (device == NULL)
