@@ -127,17 +127,10 @@ parseopts(const char *opts, int argc, char *const argv[])
 			exit(1);
 
 		switch (next) {
-		case 'f':
-			options.foreground = true;
-			break;
-		case 'h':
-			usage(0);
-		case 'p':
-			options.primary = true;
-			break;
-		case 's':
-			options.seat = optarg;
-			break;
+		case 'f': options.foreground = true; break;
+		case 'h': usage(0);
+		case 'p': options.primary = true; break;
+		case 's': options.seat = optarg; break;
 		case 't':
 			if (strlen(optarg) > 255)
 				die("mimetype can be at most 255 characters");
