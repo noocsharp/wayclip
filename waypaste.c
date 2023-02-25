@@ -43,7 +43,7 @@ offer_offer(void *data, struct zwlr_data_control_offer_v1 *offer, const char *mi
 }
 
 static const struct zwlr_data_control_offer_v1_listener offer_listener = {
-	 .offer = offer_offer,
+	.offer = offer_offer,
 };
 
 void
