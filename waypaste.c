@@ -55,13 +55,15 @@ control_data_offer(void *data, struct zwlr_data_control_device_v1 *device, struc
 void
 control_data_selection(void *data, struct zwlr_data_control_device_v1 *device, struct zwlr_data_control_offer_v1 *offer)
 {
-	receive(!options.primary, offer);
+	if (offer)
+		receive(!options.primary, offer);
 }
 
 void
 control_data_primary_selection(void *data, struct zwlr_data_control_device_v1 *device, struct zwlr_data_control_offer_v1 *offer)
 {
-	receive(options.primary, offer);
+	if (offer)
+		receive(options.primary, offer);
 }
 
 static const struct zwlr_data_control_device_v1_listener device_listener = {
