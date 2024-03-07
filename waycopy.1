@@ -1,4 +1,4 @@
-.Dd August 4, 2022
+.Dd March 6, 2024
 .Dt WAYCOPY 1
 .Os
 .Sh NAME
@@ -6,6 +6,7 @@
 .Nd copy data to the clipboard
 .Sh SYNOPSIS
 .Nm
+.Op Fl f
 .Op Fl p
 .Op Fl s Ar seat
 .Op Fl t Ar mimetype
@@ -14,6 +15,8 @@
 copies data from standard in to the clipboard using the wlr-data-control
 Wayland extension protocol.
 .Bl -tag -width Ds
+.It Fl f
+Keep in foreground, instead of forking into the background
 .It Fl p
 Use primary clipboard
 .It Fl s Ar seat

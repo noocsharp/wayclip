@@ -11,6 +11,8 @@
 #include "protocol/wlr-data-control-unstable-v1-client-protocol.h"
 #include "common.h"
 
+const char *usagestr = "usage: %s [-f] [-p] [-s seat] [-t mimetype]\n";
+
 struct wl_registry *registry;
 int temp;
 

@@ -8,6 +8,8 @@
 #include "protocol/wlr-data-control-unstable-v1-client-protocol.h"
 #include "common.h"
 
+const char *usagestr = "usage: %s [-p] [-s seat] [-t mimetype]\n";
+
 struct wl_display *display;
 struct zwlr_data_control_offer_v1 *acceptedoffer = NULL;
 int pipes[2];

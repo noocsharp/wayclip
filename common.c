@@ -10,6 +10,7 @@
 #include "common.h"
 
 const char *argv0;
+extern const char *usagestr;
 static bool seat_found = false;
 
 struct wl_seat *seat;
@@ -107,7 +108,7 @@ copyfd(const int out, const int in)
 static void
 usage(int code)
 {
-	fprintf(stderr, "usage: %s [-s seat] [-t mimetype]\n", argv0);
+	fprintf(stderr, usagestr, argv0);
 	exit(code);
 }
 
