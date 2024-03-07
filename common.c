@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 2
+#define _POSIX_C_SOURCE 2 // getopt
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
