@@ -1,24 +1,23 @@
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wayland-client.h>
 #include <unistd.h>
 
-#include "protocol/wlr-data-control-unstable-v1-client-protocol.h"
+#include "protocol/ext-data-control-v1-client-protocol.h"
 #include "common.h"
 
 const char *usagestr = "usage: %s [-p] [-s seat] [-t mimetype]\n";
 
 struct wl_display *display;
-struct zwlr_data_control_offer_v1 *acceptedoffer = NULL;
+struct ext_data_control_offer_v1 *acceptedoffer = NULL;
 int pipes[2];
 
 static void
-receive(int cond, struct zwlr_data_control_offer_v1 *offer)
+receive(int cond, struct ext_data_control_offer_v1 *offer)
 {
 	if (cond && acceptedoffer == offer) {
-		zwlr_data_control_offer_v1_receive(offer, options.type, pipes[1]);
+		ext_data_control_offer_v1_receive(offer, options.type, pipes[1]);
 		wl_display_roundtrip(display);
 		close(pipes[1]);
 
@@ -29,13 +28,13 @@ receive(int cond, struct zwlr_data_control_offer_v1 *offer)
 	}
 
 	if (acceptedoffer)
-		zwlr_data_control_offer_v1_destroy(acceptedoffer);
+		ext_data_control_offer_v1_destroy(acceptedoffer);
 
 	acceptedoffer = NULL;
 }
 
 void
-offer_offer(void *data, struct zwlr_data_control_offer_v1 *offer, const char *mime_type)
+offer_offer(void *data, struct ext_data_control_offer_v1 *offer, const char *mime_type)
 {
 	if (acceptedoffer)
 		return;
@@ -44,31 +43,31 @@ offer_offer(void *data, struct zwlr_data_control_offer_v1 *offer, const char *mi
 		acceptedoffer = offer;
 }
 
-static const struct zwlr_data_control_offer_v1_listener offer_listener = {
+static const struct ext_data_control_offer_v1_listener offer_listener = {
 	.offer = offer_offer,
 };
 
 void
-control_data_offer(void *data, struct zwlr_data_control_device_v1 *device, struct zwlr_data_control_offer_v1 *offer)
+control_data_offer(void *data, struct ext_data_control_device_v1 *device, struct ext_data_control_offer_v1 *offer)
 {
-	zwlr_data_control_offer_v1_add_listener(offer, &offer_listener, NULL);
+	ext_data_control_offer_v1_add_listener(offer, &offer_listener, NULL);
 }
 
 void
-control_data_selection(void *data, struct zwlr_data_control_device_v1 *device, struct zwlr_data_control_offer_v1 *offer)
+control_data_selection(void *data, struct ext_data_control_device_v1 *device, struct ext_data_control_offer_v1 *offer)
 {
 	if (offer)
 		receive(!options.primary, offer);
 }
 
 void
-control_data_primary_selection(void *data, struct zwlr_data_control_device_v1 *device, struct zwlr_data_control_offer_v1 *offer)
+control_data_primary_selection(void *data, struct ext_data_control_device_v1 *device, struct ext_data_control_offer_v1 *offer)
 {
 	if (offer)
 		receive(options.primary, offer);
 }
 
-static const struct zwlr_data_control_device_v1_listener device_listener = {
+static const struct ext_data_control_device_v1_listener device_listener = {
 	.data_offer = control_data_offer,
 	.selection = control_data_selection,
 	.primary_selection = control_data_primary_selection,
@@ -103,11 +102,11 @@ main(int argc, char *argv[])
 	if (pipe(pipes) == -1)
 		die("failed to create pipe");
 
-	struct zwlr_data_control_device_v1 *device = zwlr_data_control_manager_v1_get_data_device(data_control_manager, seat);
+	struct ext_data_control_device_v1 *device = ext_data_control_manager_v1_get_data_device(data_control_manager, seat);
 	if (device == NULL)
 		die("data device is null");
 
-	zwlr_data_control_device_v1_add_listener(device, &device_listener, NULL);
+	ext_data_control_device_v1_add_listener(device, &device_listener, NULL);
 
 	wl_display_roundtrip(display);
 }

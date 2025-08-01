@@ -1,4 +1,5 @@
 #define _POSIX_C_SOURCE 2 // getopt
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,7 +7,7 @@
 #include <unistd.h>
 #include <wayland-client.h>
 
-#include "protocol/wlr-data-control-unstable-v1-client-protocol.h"
+#include "protocol/ext-data-control-v1-client-protocol.h"
 #include "common.h"
 
 const char *argv0;
@@ -14,7 +15,7 @@ extern const char *usagestr;
 static bool seat_found = false;
 
 struct wl_seat *seat;
-struct zwlr_data_control_manager_v1 *data_control_manager;
+struct ext_data_control_manager_v1 *data_control_manager;
 
 struct options options = {
 	.type = "text/plain;charset=utf-8"
@@ -43,13 +44,13 @@ void
 registry_global(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version)
 {
 	if (!seat_found && strcmp(interface, "wl_seat") == 0) {
-		seat = wl_registry_bind(registry, name, &wl_seat_interface, 2);
+		seat = wl_registry_bind(registry, name, &wl_seat_interface, 1);
 		if (options.seat) {
 			wl_seat_add_listener(seat, &seat_listener, NULL);
 			seat = NULL;
 		} else seat_found = true;
-	} else if (strcmp(interface, "zwlr_data_control_manager_v1") == 0) {
-		data_control_manager = wl_registry_bind(registry, name, &zwlr_data_control_manager_v1_interface, 2);
+	} else if (strcmp(interface, "ext_data_control_manager_v1") == 0) {
+		data_control_manager = wl_registry_bind(registry, name, &ext_data_control_manager_v1_interface, 1);
 	}
 }
 

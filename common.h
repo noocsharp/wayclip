@@ -1,5 +1,5 @@
 extern struct wl_seat *seat;
-extern struct zwlr_data_control_manager_v1 *data_control_manager;
+extern struct ext_data_control_manager_v1 *data_control_manager;
 extern const struct wl_registry_listener registry_listener;
 
 extern const char *argv0;

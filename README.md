@@ -2,7 +2,7 @@
 
 wayclip is a pair of command-line utilities: `waycopy` and `waypaste`,
 which allow access to the Wayland clipboard. Specifically, `wayclip`
-is a `wlr-data-control` protocol client.
+is an `ext-data-control` protocol client.
 
 wayclip distinguishes itself from other Wayland clipboard utilities
 in the following ways:
